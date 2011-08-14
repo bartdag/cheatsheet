@@ -18,20 +18,27 @@ least, it came to my rescue.
 Requirements
 ------------
 
-You need bash.
+You need bash and awk.
 
 
 Installation
 ------------
 
 Place the script on your $PATH. Make sure that $EDITOR is set to your favorite
-editor or else, you'll end up in plain vi.
+editor.
 
 
 Usage
 -----
 
-TBD
+::
+
+    cs --init
+    cs --edit git           # open the git cheatsheet in an editor
+    cs git                  # displays git cheatsheet
+    cs git reset            # displays reset section in git cheatsheet
+    cs --list               # list all cheatsheets
+    cs --list-sections git  # list all sections in git cheatsheet
 
 
 Status of the project
@@ -43,7 +50,9 @@ Initial work only. Children may cry because of bugs.
 Todo
 ----
 
-TBD (that's meta)
+#. Add -h --help flag.
+#. Use a proper naming convention.
+#. Add git and hg support.
 
 
 License

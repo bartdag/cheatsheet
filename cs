@@ -32,14 +32,13 @@ function edit {
 }
 
 function showcs {
-    local cheat_path="${CSDIR}/${1}"
     checkcsdir
+    local cheat_path="${CSDIR}/${1}"
 
-    if [ -f "$cheat_path" ]
+    if [ -f "${cheat_path}" ]
     then
-        cat "$cheat_path"
+        cat "${cheat_path}"
         printf "\n"
-        exit 0
     else
         printf "The cheatsheet ${1} does not exist.\n"
         exit 1
@@ -47,7 +46,34 @@ function showcs {
 }
 
 function showsection {
-    echo 'Not implemented yet'
+    checkcsdir
+    local cheat_path="${CSDIR}/${1}"
+    if [ -f "${cheat_path}" ]
+    then
+        awk "/^\\[.+\\]/ { flag = 0} 
+{ if (flag == 1) { print \$0 } }
+/^\\[${2}\\]/ { flag = 1}" "${cheat_path}"
+    else
+        printf "The cheatsheet ${1} does not exist.\n"
+        exit 1
+    fi
+}
+
+function listcs {
+    checkcsdir
+    ls "${CSDIR}"
+}
+
+function listsections {
+    checkcsdir
+    local cheat_path="${CSDIR}/${1}"
+    if [ -f "${cheat_path}" ]
+    then
+        awk '/^\[.+\]/' "${cheat_path}"
+    else
+        printf "The cheatsheet ${1} does not exist.\n"
+        exit 1
+    fi
 }
 
 # Transform long options into short ones
@@ -58,6 +84,8 @@ do
         --init) ARGS="${ARGS}-i ";;
         --edit) ARGS="${ARGS}-e ";;
         --csdir) ARGS="${ARGS}-d ";;
+        --list) ARGS="${ARGS}-l ";;
+        --list-sections) ARGS="${ARGS}-s ";;
         # pass through anything else
         *) [[ "${ARG:0:1}" == "-" ]] || delim="\""
             ARGS="${ARGS}${delim}${ARG}${delim} ";;
@@ -70,9 +98,11 @@ eval set -- $ARGS
 initflag=
 editflag=
 csdirflag=
+listflag=
+listsectionsflag=
 csdirvar=
 
-while getopts ':ied:' OPTION
+while getopts ':ielsd:' OPTION
 do
 	case $OPTION in
 	i) 	    initflag=1
@@ -82,6 +112,11 @@ do
 	d)      csdirflag=1
 	        csdirvar="$OPTARG"
 	        ;;
+	l)      listflag=1
+	        ;;
+    s)
+            listsectionsflag=1
+            ;;
 	?) 	    printf "unknown option: -%s\n" $OPTARG	
 	        usage
 	        exit 2
@@ -104,11 +139,29 @@ then
 	exit 0
 fi
 
+if [ "$listflag" ]
+then
+    listcs
+    exit 0
+fi
+
+if [ "$listsectionsflag" ]
+then
+    if [ $# -ge 1 ]
+    then
+        listsections "${1}"
+        exit 0
+    else
+        print "Not enough argument. Need a cheatsheet name.\n"
+        exit 2
+    fi
+fi
+
 if [ "$editflag" ]
 then
 	if [ $# -ge 1 ]
     then
-        edit $1
+        edit "${1}"
         exit 0
     else
         print "Not enough argument. Need a cheatsheet name.\n"
@@ -123,9 +176,12 @@ then
     exit 2
 elif [ $# -eq 1 ]
 then
-    showcs $1
+    showcs "${1}"
 else
-    showsection $1 $2
+    cs="${1}"
+    shift
+    section="${*}"
+    showsection "${cs}" "${section}"
 fi
 
 exit 0
