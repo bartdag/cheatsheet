@@ -6,6 +6,10 @@ function usage {
     printf "Usage: %s: [-i] [-e] [-d csdir] cheatsheet [section]\n" $(basename $0) >&2
 }
 
+function showhelp {
+    printf "Not implemented yet\n"
+}
+
 function checkcsdir {
     if [ ! -d "$CSDIR" ]
     then
@@ -25,19 +29,36 @@ function localinit {
     fi
 }
 
+function gitinit {
+    printf "Not implemented yet\n"
+
+}
+
+function hginit {
+    printf "Not implemented yet\n"
+}
+
 function edit {
     checkcsdir
     local cheatpath="${CSDIR}/${1}"
     $EDITOR "${cheatpath}"
 }
 
+function gitcommit {
+    printf "\n"
+}
+
+function hgcommit {
+    printf "\n"
+}
+
 function showcs {
     checkcsdir
-    local cheat_path="${CSDIR}/${1}"
+    local cheatpath="${CSDIR}/${1}"
 
-    if [ -f "${cheat_path}" ]
+    if [ -f "${cheatpath}" ]
     then
-        cat "${cheat_path}"
+        cat "${cheatpath}"
         printf "\n"
     else
         printf "The cheatsheet ${1} does not exist.\n"
@@ -47,12 +68,12 @@ function showcs {
 
 function showsection {
     checkcsdir
-    local cheat_path="${CSDIR}/${1}"
-    if [ -f "${cheat_path}" ]
+    local cheatpath="${CSDIR}/${1}"
+    if [ -f "${cheatpath}" ]
     then
         awk "/^\\[.+\\]/ { flag = 0} 
 { if (flag == 1) { print \$0 } }
-/^\\[${2}\\]/ { flag = 1}" "${cheat_path}"
+/^\\[${2}\\]/ { flag = 1}" "${cheatpath}"
     else
         printf "The cheatsheet ${1} does not exist.\n"
         exit 1
@@ -66,10 +87,10 @@ function listcs {
 
 function listsections {
     checkcsdir
-    local cheat_path="${CSDIR}/${1}"
-    if [ -f "${cheat_path}" ]
+    local cheatpath="${CSDIR}/${1}"
+    if [ -f "${cheatpath}" ]
     then
-        awk '/^\[.+\]/' "${cheat_path}"
+        awk '/^\[.+\]/ {print substr( $0, 2, length($0) - 2)}' "${cheatpath}"
     else
         printf "The cheatsheet ${1} does not exist.\n"
         exit 1
@@ -77,18 +98,21 @@ function listsections {
 }
 
 # Transform long options into short ones
-for ARG in $*
+for arg in $*
 do
     delim=""
-    case "$ARG" in
+    case "$arg" in
         --init) ARGS="${ARGS}-i ";;
         --edit) ARGS="${ARGS}-e ";;
         --csdir) ARGS="${ARGS}-d ";;
         --list) ARGS="${ARGS}-l ";;
         --list-sections) ARGS="${ARGS}-s ";;
+        --git) ARGS="${ARGS}-g ";;
+        --hg) ARGS="${ARGS}-m ";;
+        --help) ARGS="${ARGS}-h ";;
         # pass through anything else
-        *) [[ "${ARG:0:1}" == "-" ]] || delim="\""
-            ARGS="${ARGS}${delim}${ARG}${delim} ";;
+        *) [[ "${arg:0:1}" == "-" ]] || delim="\""
+            ARGS="${ARGS}${delim}${arg}${delim} ";;
     esac
 done
 
@@ -101,8 +125,11 @@ csdirflag=
 listflag=
 listsectionsflag=
 csdirvar=
+gitflag=
+hgflag=
+helpflag=
 
-while getopts ':ielsd:' OPTION
+while getopts ':iegmhlsd:' OPTION
 do
 	case $OPTION in
 	i) 	    initflag=1
@@ -117,6 +144,12 @@ do
     s)
             listsectionsflag=1
             ;;
+    g)      gitflag=1
+            ;;
+    m)      hgflag=1
+            ;;
+    h)      helpflag=1
+            ;;
 	?) 	    printf "unknown option: -%s\n" $OPTARG	
 	        usage
 	        exit 2
@@ -128,6 +161,12 @@ do
 done
 shift $(($OPTIND -1))
 
+if [ "$helpflag" ]
+then
+	showhelp
+	exit 0
+fi
+
 if [ "$csdirflag" ]
 then
     CSDIR="$csdirvar"
@@ -136,6 +175,13 @@ fi
 if [ "$initflag" ]
 then
 	localinit
+	if [ "$gitflag" ]
+    then
+        gitinit
+    elif [ "$hgflag" ]
+    then
+        hginit
+    fi
 	exit 0
 fi
 
@@ -152,7 +198,7 @@ then
         listsections "${1}"
         exit 0
     else
-        print "Not enough argument. Need a cheatsheet name.\n"
+        printf "Not enough argument. Need a cheatsheet name.\n"
         exit 2
     fi
 fi
@@ -162,9 +208,11 @@ then
 	if [ $# -ge 1 ]
     then
         edit "${1}"
+        gitcommit "${1}"
+        hgcommit "${1}"
         exit 0
     else
-        print "Not enough argument. Need a cheatsheet name.\n"
+        printf "Not enough argument. Need a cheatsheet name.\n"
         exit 2
     fi
 fi

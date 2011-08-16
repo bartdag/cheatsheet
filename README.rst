@@ -14,6 +14,10 @@ down this information somewhere.
 cs, the ultimate cheatsheet management bash script comes to the rescue. At
 least, it came to my rescue.
 
+One last note, the script tries to prevent some goofs but if you pass tons of
+flags to the script and hope for the best, you are likely to be in for the
+worst :-)
+
 
 Requirements
 ------------
@@ -53,6 +57,7 @@ Todo
 #. Add -h --help flag.
 #. Use a proper naming convention.
 #. Add git and hg support.
+#. Add bash completion. Seriously.
 
 
 License
