@@ -11,7 +11,7 @@ function showhelp {
 }
 
 function checkcsdir {
-    if [ ! -d "$CSDIR" ]
+    if [ ! -d "${CSDIR}" ]
     then
         printf "The cheatsheet directory, ${CSDIR}, does not exist. "
         printf "Did you run cs -i ?\n"
@@ -20,7 +20,7 @@ function checkcsdir {
 }
 
 function localinit {
-    if mkdir "$CSDIR" > /dev/null 2>&1
+    if mkdir "${CSDIR}" > /dev/null 2>&1
     then
         printf "Cheatsheet directory initialized in ${CSDIR}\n"
     else
@@ -30,26 +30,64 @@ function localinit {
 }
 
 function gitinit {
-    printf "Not implemented yet\n"
-
+    checkcsdir
+    # No need to check anything as git is verbose enough
+    if ! git init "${CSDIR}"
+    then
+        exit 1
+    fi
 }
 
 function hginit {
-    printf "Not implemented yet\n"
+    checkcsdir
+    if hg init "${CSDIR}"
+    then
+        printf "Hg repository initialized in ${CSDIR}\n"
+    else
+        printf "Error while initializing Hg repository in ${CSDIR}\n"
+        exit 1
+    fi
 }
 
 function edit {
     checkcsdir
     local cheatpath="${CSDIR}/${1}"
-    $EDITOR "${cheatpath}"
+    if [ "${EDITOR}" ]
+    then
+        $EDITOR "${cheatpath}"
+    else
+        vi "${cheatpath}"
+    fi
 }
 
 function gitcommit {
-    printf "\n"
+    if ! git --git-dir="${CSDIR}/.git" --work-tree="${CSDIR}" add "${CSDIR}/${1}" > /dev/null 2>&1
+    then
+        printf "Could not add ${1} to git repository\n"
+        exit 1
+    fi
+
+    if git --git-dir="${CSDIR}/.git" --work-tree="${CSDIR}" commit -m "Edited ${1}" > /dev/null 2>&1
+    then
+        printf "Changes to ${1} committed.\n"
+    else
+        printf "An error occurred while committing ${CSDIR}/${1}\n"
+    fi
 }
 
 function hgcommit {
-    printf "\n"
+    if ! hg add "${CSDIR}/${1}"
+    then
+        printf "Could not add ${1} to hg repository\n"
+        exit 1
+    fi
+
+    if hg -R "${CSDIR}" commit -m "Edited ${1}" > /dev/null 2>&1
+    then
+        printf "Changes to ${1} committed.\n"
+    else
+        printf "An error occurred while committing ${CSDIR}/${1}\n"
+    fi
 }
 
 function showcs {
@@ -208,8 +246,13 @@ then
 	if [ $# -ge 1 ]
     then
         edit "${1}"
-        gitcommit "${1}"
-        hgcommit "${1}"
+        if [ -d "${CSDIR}/.git" ]
+        then
+            gitcommit "${1}"
+        elif [ -d "${CSDIR}/.hg" ]
+        then
+            hgcommit "${1}"
+        fi
         exit 0
     else
         printf "Not enough argument. Need a cheatsheet name.\n"
