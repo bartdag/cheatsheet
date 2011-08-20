@@ -7,7 +7,27 @@ function usage {
 }
 
 function showhelp {
-    printf "Not implemented yet\n"
+    printf "Usage: cs [options] cheatsheet [section]\n\n"
+    printf "Display a cheatsheet on the standard output.\n" 
+    printf "If a section is specified, only the section is displayed.\n"
+    printf "\nCheatsheet Format:\n"
+    printf "A cheatsheet should be text file. A section title should be on\n"
+    printf "a new line, between square brackets, e.g., [mysection]\n"
+    printf "\nOptions:\n"
+    printf "  -i,--init          Initialize the cheatsheet repository.\n"
+    printf '  -e,--edit          Edit the specified cheatsheet with $EDITOR or vi.\n'
+    printf "  -l,--list          List the cheatsheets.\n"
+    printf "  -s,--list-sections List the sections in a cheatsheet.\n"
+    printf "  -d,--csdir  CSDIR  Use CSDIR as the cheatsheet repository directory.\n"
+    printf "  -g,--git           Initialize a git repository (with --init)\n"
+    printf "  -m,--hg            Initialize a mercurial repository (with --init)\n"
+    printf "  -h,--help          Display this help screen.\n"
+    printf "\nAbout Git and Mercurial integration:\n"
+    printf "If a repository is initialized with --init --git or --init --hg,\n"
+    printf "changes to a cheatsheet with --edit will be automatically committed.\n"
+    printf "It is the responsibility of the user to clone an existing repository\n"
+    printf "and to push the repository to a remote one, if needed.\n"
+
 }
 
 function checkcsdir {

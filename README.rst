@@ -37,27 +37,42 @@ Usage
 
 ::
 
-    cs --init
-    cs --edit git           # open the git cheatsheet in an editor
-    cs git                  # displays git cheatsheet
-    cs git reset            # displays reset section in git cheatsheet
-    cs --list               # list all cheatsheets
-    cs --list-sections git  # list all sections in git cheatsheet
+    Usage: cs [options] cheatsheet [section]
+
+    Display a cheatsheet on the standard output.
+    If a section is specified, only the section is displayed.
+
+    Cheatsheet Format:
+    A cheatsheet should be text file. A section title should be on
+    a new line, between square brackets, e.g., [mysection]
+
+    Options:
+    -i,--init          Initialize the cheatsheet repository.
+    -e,--edit          Edit the specified cheatsheet with $EDITOR or vi.
+    -l,--list          List the cheatsheets.
+    -s,--list-sections List the sections in a cheatsheet.
+    -d,--csdir  CSDIR  Use CSDIR as the cheatsheet repository directory.
+    -g,--git           Initialize a git repository (with --init)
+    -m,--hg            Initialize a mercurial repository (with --init)
+    -h,--help          Display this help screen.
+
+    About Git and Mercurial integration:
+    If a repository is initialized with --init --git or --init --hg,
+    changes to a cheatsheet with --edit will be automatically committed.
+    It is the responsibility of the user to clone an existing repository
+    and to push the repository to a remote one, if needed.cs --init
 
 
 Status of the project
 ---------------------
 
-Initial work only. Children may cry because of bugs.
+All commands displayed in the usage are complete.
 
 
 Todo
 ----
 
-#. Add -h --help flag.
-#. Use a proper naming convention.
-#. Add git and hg support.
-#. Add bash completion. Seriously.
+#. Add bash completion.
 
 
 License
