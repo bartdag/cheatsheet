@@ -6,13 +6,17 @@ cheatsheet - A bash script to manage your personal cheatsheets
 :Version: 0.1
 
 It seems I can never remember the subtleties of git reset, the difference
-between markdown and restructuredText lists and the useful flags of the find
-command. I always end up using duckduckgo or google to find these answers,
-even though I know that (1) I used these commands before, (2) I probably wrote
-down this information somewhere.
+between markdown and restructuredText list syntax and the useful flags of the
+find command. I always end up using duckduckgo or google to find these
+answers, even though I know that (1) I used these commands before, (2) I
+probably wrote down this information somewhere.
 
 cs, the ultimate cheatsheet management bash script comes to the rescue. At
 least, it came to my rescue.
+
+With cs, you can view your cheatsheet on the command line, specify a section
+to display, edit your cheatsheet, and automatically commit your changes to a
+git or mercurial repository.
 
 One last note, the script tries to prevent some goofs but if you pass tons of
 flags to the script and hope for the best, you are likely to be in for the
