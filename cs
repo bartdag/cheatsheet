@@ -2,6 +2,8 @@
 
 CSDIR=~/".cs"
 
+VERSION='0.1'
+
 function usage {
     printf "Usage: %s: [-i] [-e] [-d csdir] cheatsheet [section]\n" $(basename $0) >&2
 }
@@ -22,6 +24,7 @@ function showhelp {
     printf "  -g,--git           Initialize a git repository (with --init)\n"
     printf "  -m,--hg            Initialize a mercurial repository (with --init)\n"
     printf "  -h,--help          Display this help screen.\n"
+    printf "  -v,--version       Display the version number.\n"
     printf "\nAbout Git and Mercurial integration:\n"
     printf "If a repository is initialized with --init --git or --init --hg,\n"
     printf "changes to a cheatsheet with --edit will be automatically committed.\n"
@@ -168,6 +171,7 @@ do
         --git) ARGS="${ARGS}-g ";;
         --hg) ARGS="${ARGS}-m ";;
         --help) ARGS="${ARGS}-h ";;
+        --version) ARGS="${ARGS}-v ";;
         # pass through anything else
         *) [[ "${arg:0:1}" == "-" ]] || delim="\""
             ARGS="${ARGS}${delim}${arg}${delim} ";;
@@ -186,8 +190,9 @@ csdirvar=
 gitflag=
 hgflag=
 helpflag=
+versionflag=
 
-while getopts ':iegmhlsd:' OPTION
+while getopts ':iegmhvlsd:' OPTION
 do
 	case $OPTION in
 	i) 	    initflag=1
@@ -208,6 +213,8 @@ do
             ;;
     h)      helpflag=1
             ;;
+    v)      versionflag=1
+            ;;
 	?) 	    printf "unknown option: -%s\n" $OPTARG	
 	        usage
 	        exit 2
@@ -223,6 +230,12 @@ if [ "$helpflag" ]
 then
 	showhelp
 	exit 0
+fi
+
+if [ "$versionflag" ]
+then
+    printf "cheatsheet version $VERSION\n"
+    exit 0
 fi
 
 if [ "$csdirflag" ]
